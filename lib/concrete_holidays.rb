@@ -1,17 +1,35 @@
-module ConcreteHolidays
-  require 'concrete_holidays/base'
-  require 'concrete_holidays/calculations'
+require 'concrete_holidays/calculations'
+require 'concrete_holidays/holidays'
 
-  require 'concrete_holidays/new_years_day'
-  require 'concrete_holidays/new_years_day_observed'
-  require 'concrete_holidays/memorial_day'
-  require 'concrete_holidays/independence_day'
-  require 'concrete_holidays/independence_day_observed'
-  require 'concrete_holidays/labor_day'
-  require 'concrete_holidays/thanksgiving'
-  require 'concrete_holidays/black_friday'
-  require 'concrete_holidays/christmas_eve'
-  require 'concrete_holidays/christmas'
-  require 'concrete_holidays/christmas_observed'
-  require 'concrete_holidays/new_years_eve'
+class ConcreteHolidays
+  attr_reader :holidays
+
+  def initialize
+    @holidays = []
+    initialize_cache
+    default_holidays
+  end
+
+  def default_holidays
+    # override to set initial holidays
+  end
+
+  def add_holiday(holiday)
+    initialize_cache
+    @holidays << holiday
+  end
+
+  def holiday?(date)
+    holidays_in_year(date.year).include?(date)
+  end
+
+  private
+
+  def initialize_cache
+    @cache_by_year = {}
+  end
+
+  def holidays_in_year(year)
+    @cache_by_year[year] ||= holidays.flat_map { |holiday| holiday.date(year) }
+  end
 end
